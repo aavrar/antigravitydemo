@@ -8,17 +8,16 @@ const sampleTexts = {
     business: "We are pleased to announce the launch of our new strategic initiative aimed at optimizing operational efficiency across all departments. This comprehensive plan involves the integration of advanced automation tools and the restructuring of our workflow processes. By streamlining communication channels and reducing redundant tasks, we anticipate a 20% increase in overall productivity by the end of the fiscal year."
 };
 
-const TextInput = ({ onAnalysisComplete }) => {
+const TextInput = ({ onAnalysisStart, onAnalysisComplete, isAnalyzing }) => {
     const [text, setText] = useState('');
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     const handleAnalyze = async () => {
         if (!text.trim()) return;
 
-        setIsAnalyzing(true);
+        onAnalysisStart();
 
         // Fake delay for "AI" feel
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         const basicMetrics = calculateBasicMetrics(text);
         const readability = calculateReadability(text);
@@ -32,8 +31,6 @@ const TextInput = ({ onAnalysisComplete }) => {
             wordFreq,
             rawText: text
         });
-
-        setIsAnalyzing(false);
     };
 
     const loadSample = (type) => {
@@ -83,24 +80,25 @@ const TextInput = ({ onAnalysisComplete }) => {
                     onClick={handleAnalyze}
                     disabled={isAnalyzing || !text.trim()}
                     className={`
-            px-8 py-3 rounded-full font-semibold text-white 
+            relative px-8 py-3 rounded-full font-semibold text-white 
             bg-gradient-to-r from-brand-primary to-brand-secondary 
-            hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] 
+            hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] 
             transform hover:scale-105 transition-all duration-300
             disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-            flex items-center gap-2
+            flex items-center gap-2 overflow-hidden group
           `}
                 >
+                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 rounded-full"></div>
                     {isAnalyzing ? (
                         <>
-                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg className="animate-spin h-5 w-5 text-white relative z-10" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            Analyzing...
+                            <span className="relative z-10">Analyzing...</span>
                         </>
                     ) : (
-                        'Analyze Writing'
+                        <span className="relative z-10">Analyze Writing</span>
                     )}
                 </button>
             </div>
